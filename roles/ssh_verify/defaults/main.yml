@@ -1,0 +1,2 @@
+ssh_verify_pubkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key.pub"
+ssh_verify_privkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key"

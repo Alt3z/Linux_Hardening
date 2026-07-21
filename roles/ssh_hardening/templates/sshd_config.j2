@@ -1,0 +1,22 @@
+# Managed by Ansible - Linux_Hardening project
+# {{ ansible_managed }}
+
+Port {{ ssh_hardening_port }}
+Protocol 2
+
+PermitRootLogin {{ ssh_hardening_permit_root_login }}
+PasswordAuthentication {{ ssh_hardening_password_auth }}
+PubkeyAuthentication {{ ssh_hardening_pubkey_auth }}
+ChallengeResponseAuthentication no
+KbdInteractiveAuthentication no
+UsePAM yes
+
+PermitEmptyPasswords no
+X11Forwarding no
+MaxAuthTries {{ ssh_hardening_max_auth_tries }}
+ClientAliveInterval {{ ssh_hardening_client_alive_interval }}
+ClientAliveCountMax {{ ssh_hardening_client_alive_count_max }}
+
+AllowUsers {{ ssh_hardening_allow_users }}
+
+Subsystem sftp /usr/lib/openssh/sftp-server

@@ -1,0 +1,3 @@
+collections:
+  - name: community.crypto   # модуль openssh_keypair
+  - name: ansible.posix      # модуль authorized_key

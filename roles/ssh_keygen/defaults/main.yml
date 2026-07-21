@@ -1,0 +1,3 @@
+ssh_keygen_local_dir: "{{ playbook_dir }}/../files/ssh_keys"
+ssh_keygen_key_name: linux_hardening_key
+ssh_keygen_comment: "user@linux_hardening"

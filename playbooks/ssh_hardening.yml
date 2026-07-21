@@ -1,0 +1,8 @@
+---
+- name: Generate keys and harden SSH
+  hosts: linux_hosts
+  become: true
+  serial: 1
+  roles:
+    - ssh_keygen
+    - ssh_hardening

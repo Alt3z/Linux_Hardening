@@ -1,0 +1,7 @@
+---
+- name: Verify SSH hardening configuration
+  hosts: linux_hosts
+  become: true
+  gather_facts: false
+  roles:
+    - ssh_verify

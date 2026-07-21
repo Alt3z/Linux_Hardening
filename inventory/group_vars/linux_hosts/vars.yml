@@ -1,0 +1,7 @@
+ansible_user: user
+ansible_password: "{{ vault_ansible_password }}"
+ansible_become_password: "{{ vault_ansible_become_password }}"
+
+ansible_ssh_private_key_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key"
+
+ssh_hardening_pubkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key.pub"
