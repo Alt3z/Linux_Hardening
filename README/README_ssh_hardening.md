@@ -15,6 +15,7 @@ Ansible-проект для базового hardening'а Linux-хостов. П
 
 ## Структура проекта
 
+```
 Linux_Hardening/
 ├── ansible.cfg # глобальный конфиг: инвентарь, vault, sudo
 ├── requirements.yml # зависимости — коллекции Ansible Galaxy
@@ -40,6 +41,7 @@ Linux_Hardening/
 │ └── templates/sshd_config.j2
 └── playbooks/
 └── ssh_hardening.yml # точка входа
+```
 
 ## Почему group_vars лежит внутри inventory/, а не в корне
 
