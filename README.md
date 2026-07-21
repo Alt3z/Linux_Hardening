@@ -13,7 +13,7 @@ Ansible-проект для базовой безопасной настройк
 - отключение парольной аутентификации, вход только по ключу
 - автоматическая проверка (`ssh_verify`), что всё применилось и реально работает
 
-Подробности — [README_ssh_hardening.md](README_ssh_hardening.md) и [README_ssh_verify.md](README_ssh_verify.md).
+Подробности — [README_ssh_hardening.md](README/README_ssh_hardening.md) и [README_ssh_verify.md](README_ssh_verify.md).
 
 ## Быстрый старт
 
