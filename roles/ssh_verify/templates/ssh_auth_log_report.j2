@@ -1,13 +1,13 @@
-Отчёт по логам аутентификации — /var/log/auth.log
+Отчёт по логированию аутентификации — /var/log/auth.log
 Хост: {{ inventory_hostname }} ({{ ansible_host }})
 Дата: {{ ansible_date_time.iso8601 | default('') }}
 
-Файл существует: {{ 'да' if auth_log_stat.stat.exists else 'НЕТ' }}
+{{ '%-30s' | format('Файл существует') }} [{{ 'OK' if auth_log_stat.stat.exists else 'FAIL' }}]
 {% if auth_log_stat.stat.exists %}
-Размер: {{ auth_log_stat.stat.size }} байт
-
-=== Последние 30 строк ===
-{{ auth_log_tail.stdout }}
+{{ '%-30s' | format('Есть записи sshd') }} [{{ 'OK' if (auth_log_sshd_count.stdout | default('0') | int) > 0 else 'FAIL' }}]
+{{ '%-30s' | format('Обновлялся за последние 24ч') }} [{{ 'OK' if auth_log_fresh else 'FAIL' }}]
+Размер файла: {{ auth_log_stat.stat.size }} байт
+Записей sshd: {{ auth_log_sshd_count.stdout | default('0') }}
 {% else %}
 FAIL: /var/log/auth.log отсутствует — проверь, включён ли rsyslog и не переехало ли логирование целиком в journald.
 {% endif %}

@@ -1,11 +1,7 @@
 ---
-- name: Verify sshd_config directives
+- name: Verify sshd_config and access
   ansible.builtin.import_tasks: sshd_config.yml
   tags: [sshd_config]
-
-- name: Verify SSH access
-  ansible.builtin.import_tasks: access_check.yml
-  tags: [access]
 
 - name: Verify auth.log
   ansible.builtin.import_tasks: auth_log.yml

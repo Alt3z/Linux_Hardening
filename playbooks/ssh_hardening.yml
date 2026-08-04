@@ -4,5 +4,4 @@
   become: true
   serial: 1
   roles:
-    - ssh_keygen
     - ssh_hardening

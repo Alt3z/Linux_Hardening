@@ -24,3 +24,5 @@ ssh_hardening_expected:
 
 ssh_hardening_accept_env: "LANG LC_*"
 ssh_hardening_sftp_subsystem: "sftp /usr/lib/openssh/sftp-server"
+
+ssh_hardening_key_passphrase: "{{ vault_ssh_key_passphrase }}"

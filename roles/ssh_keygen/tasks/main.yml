@@ -8,12 +8,12 @@
   become: false
   run_once: true
 
-- name: Generate ED25519 keypair on control node (idempotent — skips if it already exists)
+- name: Generate ED25519 keypair with passphrase (idempotent — skips if it already exists)
   community.crypto.openssh_keypair:
     path: "{{ ssh_keygen_local_dir }}/{{ ssh_keygen_key_name }}"
     type: ed25519
     comment: "{{ ssh_keygen_comment }}"
-    passphrase: ""
+    passphrase: "{{ ssh_hardening_key_passphrase }}"
   delegate_to: localhost
   become: false
   run_once: true

@@ -11,10 +11,22 @@
     path: /var/log/auth.log
   register: auth_log_stat
 
-- name: Get last lines of auth.log
-  ansible.builtin.command: tail -n 30 /var/log/auth.log
-  register: auth_log_tail
+- name: Count sshd-related lines in auth.log
+  ansible.builtin.shell: grep -c sshd /var/log/auth.log
+  register: auth_log_sshd_count
   changed_when: false
+  failed_when: false
+  when: auth_log_stat.stat.exists
+
+- name: Get current time on the host
+  ansible.builtin.command: date +%s
+  register: host_current_time
+  changed_when: false
+  when: auth_log_stat.stat.exists
+
+- name: Evaluate auth.log freshness (updated within the last 24h)
+  ansible.builtin.set_fact:
+    auth_log_fresh: "{{ ((host_current_time.stdout | int) - (auth_log_stat.stat.mtime | int)) < 86400 }}"
   when: auth_log_stat.stat.exists
 
 - name: Generate auth.log report

@@ -2,8 +2,9 @@
 Редатирование через ansible-vault edit inventory/group_vars/linux_hosts/vault.yml
 
 Внутрь нужно положить:
-vault_ansible_password: "qwe"
-vault_ansible_become_password: "qwe"
+vault_ansible_password: "твой_пароль_на_ключ"
+vault_ansible_become_password: "твой_пароль_на_ключ"
+vault_ssh_key_passphrase: "твой_пароль_на_ключ"
 
 В результате выйдет (если смотерть через nano):
 

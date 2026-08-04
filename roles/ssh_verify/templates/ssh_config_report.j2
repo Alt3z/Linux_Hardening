@@ -1,19 +1,40 @@
-Отчёт по конфигурации SSH — sshd_config
+Отчёт по SSH — конфигурация и доступ
 Хост: {{ inventory_hostname }} ({{ ansible_host }})
 Дата: {{ ansible_date_time.iso8601 | default('') }}
 
-=== Проверка параметров (эффективная конфигурация, sshd -T) ===
-{% for name, check in ssh_directive_checks.items() %}
-{{ '%-28s' | format(name) }} значение: {{ '%-30s' | format(check.value) }} требуется: {{ '%-15s' | format(check.expected) }} [{{ 'OK' if check.ok else 'FAIL' }}]
+{% set effective = {} %}
+{% for line in sshd_effective_config.stdout_lines %}
+{% set parts = line.split(' ', 1) %}
+{% set key = parts[0] %}
+{% set value = parts[1] if parts | length > 1 else '' %}
+{% if key not in effective %}
+{% set _ = effective.update({key: value}) %}
+{% endif %}
 {% endfor %}
-{{ '%-28s' | format('AllowUsers') }} значение: {{ '%-30s' | format(ssh_allowusers_check.value) }} требуется: {{ '%-15s' | format(ssh_allowusers_check.expected) }} [{{ 'OK' if ssh_allowusers_check.ok else 'FAIL' }}]
-{{ '%-28s' | format('AcceptEnv') }} значение: {{ '%-30s' | format(ssh_acceptenv_check.value) }} требуется: {{ '%-15s' | format(ssh_acceptenv_check.expected) }} [{{ 'OK' if ssh_acceptenv_check.ok else 'FAIL' }}]
-{{ '%-28s' | format('Subsystem sftp') }} значение: {{ '%-30s' | format(ssh_subsystem_check.value) }} требуется: {{ '%-15s' | format(ssh_subsystem_check.expected) }} [{{ 'OK' if ssh_subsystem_check.ok else 'FAIL' }}]
 
-{% set all_checks = (ssh_directive_checks.values() | list) + [ssh_allowusers_check, ssh_acceptenv_check, ssh_subsystem_check] %}
-{% set failed = all_checks | rejectattr('ok') | list %}
-{% if failed %}
-=== ИТОГ ПО ПАРАМЕТРАМ: обнаружены несоответствия ({{ failed | length }}) ===
+=== Проверка параметров (эффективная конфигурация, sshd -T) ===
+{% set ns = namespace(failed=0) %}
+{% for name, expected in ssh_hardening_expected.items() %}
+{% set actual = effective[name | lower] | default('(отсутствует)') %}
+{% set ok = (actual | lower) == (expected | lower) %}
+{% if not ok %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{{ '%-28s' | format(name) }} значение: {{ '%-30s' | format(actual) }} требуется: {{ '%-15s' | format(expected) }} [{{ 'OK' if ok else 'FAIL' }}]
+{% endfor %}
+{% set allowusers_values = sshd_effective_config.stdout_lines | select('match', '^allowusers ') | map('regex_replace', '^allowusers\\s+(.*)$', '\\1') | list %}
+{% set allowusers_ok = (allowusers_values | sort) == ssh_expected_allow_users %}
+{% if not allowusers_ok %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{{ '%-28s' | format('AllowUsers') }} значение: {{ '%-30s' | format(allowusers_values | join(' ')) }} требуется: {{ '%-15s' | format(ssh_expected_allow_users | join(' ')) }} [{{ 'OK' if allowusers_ok else 'FAIL' }}]
+{% set acceptenv_values = sshd_effective_config.stdout_lines | select('match', '^acceptenv ') | map('regex_replace', '^acceptenv\\s+(.*)$', '\\1') | list %}
+{% set acceptenv_ok = ('LANG' in acceptenv_values) and ('LC_*' in acceptenv_values) %}
+{% if not acceptenv_ok %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{{ '%-28s' | format('AcceptEnv') }} значение: {{ '%-30s' | format(acceptenv_values | join(' ')) }} требуется: {{ '%-15s' | format(ssh_hardening_accept_env) }} [{{ 'OK' if acceptenv_ok else 'FAIL' }}]
+{% set subsystem_actual = effective['subsystem'] | default('(отсутствует)') %}
+{% set subsystem_ok = subsystem_actual == ssh_hardening_sftp_subsystem %}
+{% if not subsystem_ok %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{{ '%-28s' | format('Subsystem sftp') }} значение: {{ '%-30s' | format(subsystem_actual) }} требуется: {{ '%-15s' | format(ssh_hardening_sftp_subsystem) }} [{{ 'OK' if subsystem_ok else 'FAIL' }}]
+
+{% if ns.failed > 0 %}
+=== ИТОГ ПО ПАРАМЕТРАМ: обнаружены несоответствия ({{ ns.failed }}) ===
 {% else %}
 === ИТОГ ПО ПАРАМЕТРАМ: все проверки пройдены ===
 {% endif %}
@@ -30,3 +51,10 @@
 {% if not found_extra %}
 (не найдено — конфиг содержит только управляемые проектом директивы)
 {% endif %}
+
+=== Проверка фактического доступа ===
+{{ '%-30s' | format('.ssh права (0700)') }} [{{ 'OK' if (ssh_dir_stat.stat.exists and ssh_dir_stat.stat.mode == '0700') else 'FAIL' }}]
+{{ '%-30s' | format('ключ в authorized_keys') }} [{{ 'OK' if authorized_keys_check.rc == 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход под root отклонён') }} [{{ 'OK' if root_login_attempt.rc != 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход по паролю отклонён') }} [{{ 'OK' if password_login_attempt.rc != 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход по ключу работает') }} [{{ 'OK' if key_login_attempt.rc == 0 else 'FAIL' }}]

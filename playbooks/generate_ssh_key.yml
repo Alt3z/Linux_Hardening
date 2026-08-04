@@ -1,0 +1,7 @@
+---
+- name: Generate SSH keypair for the project
+  hosts: linux_hosts
+  become: false
+  gather_facts: false
+  roles:
+    - ssh_keygen
