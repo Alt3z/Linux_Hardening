@@ -1,0 +1,4 @@
+---
+- name: Verify installed packages
+  ansible.builtin.import_tasks: packages.yml
+  tags: [packages]

@@ -1,0 +1,6 @@
+---
+- name: Verify installed packages
+  hosts: linux_hosts
+  become: true
+  roles:
+    - packages_verify

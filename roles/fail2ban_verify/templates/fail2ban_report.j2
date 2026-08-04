@@ -1,0 +1,52 @@
+Отчёт по Fail2Ban
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Служба ===
+{% set service_state = ansible_facts.services['fail2ban.service'].state | default('не найдена') %}
+{{ '%-20s' | format('fail2ban.service') }} состояние: {{ '%-15s' | format(service_state) }} [{{ 'OK' if service_state == 'running' else 'FAIL' }}]
+
+=== Источники конфигурации ===
+{{ '%-20s' | format('jail.conf') }} [{{ 'найден' if fail2ban_conf_stat.stat.exists else 'отсутствует' }}]
+{{ '%-20s' | format('jail.local') }} [{{ 'найден' if fail2ban_local_stat.stat.exists else 'отсутствует' }}]
+{{ '%-20s' | format('jail.d/*') }} [{{ (fail2ban_jaild_find.files | default([]) | length) }} файл(ов)]
+{% for f in (fail2ban_jaild_find.files | default([])) %}
+  - {{ f.path }}
+{% endfor %}
+
+{% set ns = namespace(section='') %}
+{% set sshd_params = {} %}
+{% for raw_line in fail2ban_combined_lines %}
+{% set line = raw_line.split('#')[0].split(';')[0].strip() %}
+{% if line %}
+{% if line.startswith('[') and line.endswith(']') %}
+{% set ns.section = line[1:-1].strip() %}
+{% elif '=' in line and ns.section == 'sshd' %}
+{% set key = line.split('=', 1)[0].strip() | lower %}
+{% set value = line.split('=', 1)[1].strip() %}
+{% set _ = sshd_params.update({key: value}) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+=== Секция [sshd] ===
+Найдена: {{ 'да' if sshd_params else 'НЕТ' }}
+
+{% if sshd_params %}
+=== Проверка параметров ===
+{% set fails = namespace(count=0) %}
+{% for name, expected in fail2ban_sshd_expected.items() %}
+{% set actual = sshd_params[name] | default('(отсутствует)') %}
+{% set ok = (actual | lower) == (expected | lower) %}
+{% if not ok %}{% set fails.count = fails.count + 1 %}{% endif %}
+{{ '%-14s' | format(name) }} значение: {{ '%-20s' | format(actual) }} требуется: {{ '%-15s' | format(expected) }} [{{ 'OK' if ok else 'FAIL' }}]
+{% endfor %}
+
+{% if fails.count > 0 %}
+=== ИТОГ: обнаружены несоответствия ({{ fails.count }}) ===
+{% else %}
+=== ИТОГ: все проверки пройдены ===
+{% endif %}
+{% else %}
+=== ИТОГ: секция [sshd] не найдена ни в одном конфигурационном файле — проверки параметров не выполнялись ===
+{% endif %}

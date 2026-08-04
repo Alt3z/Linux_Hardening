@@ -1,6 +1,0 @@
-- name: verify ssh
-  ansible.builtin.assert:
-    that:
-      - ansible_facts.services['ssh.service'].state == 'running'
-    fail_msg: "FAIL: ssh.service not started"
-    success_msg: "OK: ssh.service started"

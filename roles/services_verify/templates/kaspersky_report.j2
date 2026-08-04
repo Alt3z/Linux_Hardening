@@ -1,0 +1,24 @@
+Отчёт по службам Kaspersky
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Проверка служб ===
+{% set ns = namespace(failed=0) %}
+{% for svc_name in kaspersky_services %}
+{% set unit = svc_name + '.service' %}
+{% set svc = ansible_facts.services[unit] | default(None) %}
+{% if svc %}
+{% set ok = svc.state == 'running' %}
+{% if not ok %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{{ '%-20s' | format(unit) }} состояние: {{ '%-15s' | format(svc.state) }} [{{ 'OK' if ok else 'FAIL' }}]
+{% else %}
+{% set ns.failed = ns.failed + 1 %}
+{{ '%-20s' | format(unit) }} не найдена на хосте [FAIL]
+{% endif %}
+{% endfor %}
+
+{% if ns.failed > 0 %}
+=== ИТОГ: обнаружены проблемы ({{ ns.failed }}) ===
+{% else %}
+=== ИТОГ: все службы Kaspersky запущены ===
+{% endif %}

@@ -1,0 +1,14 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ services_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Generate Kaspersky services report
+  ansible.builtin.template:
+    src: kaspersky_report.j2
+    dest: "{{ services_reports_dir }}/{{ inventory_hostname }}/kaspersky.txt"
+  delegate_to: localhost
+  become: false

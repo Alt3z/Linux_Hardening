@@ -1,0 +1,6 @@
+---
+- name: Verify fail2ban
+  hosts: linux_hosts
+  become: true
+  roles:
+    - fail2ban_verify

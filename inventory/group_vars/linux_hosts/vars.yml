@@ -26,3 +26,35 @@ ssh_hardening_accept_env: "LANG LC_*"
 ssh_hardening_sftp_subsystem: "sftp /usr/lib/openssh/sftp-server"
 
 ssh_hardening_key_passphrase: "{{ vault_ssh_key_passphrase }}"
+
+fail2ban_sshd_settings:
+  enabled: "true"
+  port: "ssh"
+  filter: "sshd"
+  logpath: "/var/log/auth.log"
+  maxretry: "5"
+  bantime: "3600"
+
+kaspersky_services:
+  - kesl
+  - klnagent64
+
+iptables_service_candidates:
+  - netfilter-persistent
+  - iptables
+
+login_defs_target:
+  PASS_MAX_DAYS: 90
+  PASS_MIN_DAYS: 7
+  PASS_WARN_AGE: 14
+  ENCRYPT_METHOD: SHA512
+
+pam_pwquality_target:
+  control: requisite
+  retry: 3
+  minlen: 12
+  ucredit: -1
+  lcredit: -1
+  dcredit: -1
+  ocredit: -1
+

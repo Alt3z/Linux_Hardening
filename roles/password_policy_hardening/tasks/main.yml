@@ -1,0 +1,8 @@
+---
+- name: Harden login.defs
+  ansible.builtin.import_tasks: login_defs.yml
+  tags: [login_defs]
+
+- name: Harden PAM common-password
+  ansible.builtin.import_tasks: pam_common_password.yml
+  tags: [pam_common_password]

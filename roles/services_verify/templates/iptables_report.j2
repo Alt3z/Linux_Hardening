@@ -1,0 +1,28 @@
+Отчёт по iptables / netfilter-persistent
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Службы ===
+{% for candidate in iptables_service_candidates %}
+{% set unit = candidate + '.service' %}
+{% set svc = ansible_facts.services[unit] | default(None) %}
+{% if svc %}
+{{ '%-28s' | format(unit) }} состояние: {{ '%-20s' | format(svc.state) }} статус автозагрузки: {{ svc.status | default('unknown') }}
+{% else %}
+{{ '%-28s' | format(unit) }} не найдена на хосте
+{% endif %}
+{% endfor %}
+
+Примечание: netfilter-persistent — oneshot-юнит, после успешного применения правил
+находится в состоянии "exited", а не "running" — это нормальное штатное состояние,
+не ошибка.
+
+=== Правила IPv4 (iptables -L -n -v) ===
+{{ iptables_rules_v4.stdout }}
+
+=== Правила IPv6 (ip6tables -L -n -v) ===
+{% if iptables_rules_v6.rc == 0 %}
+{{ iptables_rules_v6.stdout }}
+{% else %}
+(IPv6 недоступен или ip6tables не установлен)
+{% endif %}

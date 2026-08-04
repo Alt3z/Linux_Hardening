@@ -1,0 +1,24 @@
+---
+- name: Set PASS_MAX_DAYS in /etc/login.defs
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^PASS_MAX_DAYS\s+'
+    line: "PASS_MAX_DAYS   {{ login_defs_target.PASS_MAX_DAYS }}"
+
+- name: Set PASS_MIN_DAYS in /etc/login.defs
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^PASS_MIN_DAYS\s+'
+    line: "PASS_MIN_DAYS   {{ login_defs_target.PASS_MIN_DAYS }}"
+
+- name: Set PASS_WARN_AGE in /etc/login.defs
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^PASS_WARN_AGE\s+'
+    line: "PASS_WARN_AGE   {{ login_defs_target.PASS_WARN_AGE }}"
+
+- name: Set ENCRYPT_METHOD in /etc/login.defs
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^ENCRYPT_METHOD\s+'
+    line: "ENCRYPT_METHOD  {{ login_defs_target.ENCRYPT_METHOD }}"

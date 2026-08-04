@@ -1,0 +1,25 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ services_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Get IPv4 iptables rules
+  ansible.builtin.command: iptables -L -n -v --line-numbers
+  register: iptables_rules_v4
+  changed_when: false
+
+- name: Get IPv6 ip6tables rules
+  ansible.builtin.command: ip6tables -L -n -v --line-numbers
+  register: iptables_rules_v6
+  changed_when: false
+  failed_when: false
+
+- name: Generate iptables report
+  ansible.builtin.template:
+    src: iptables_report.j2
+    dest: "{{ services_reports_dir }}/{{ inventory_hostname }}/iptables.txt"
+  delegate_to: localhost
+  become: false

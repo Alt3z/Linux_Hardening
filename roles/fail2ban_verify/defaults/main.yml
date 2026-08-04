@@ -1,0 +1,7 @@
+fail2ban_reports_dir: "{{ playbook_dir }}/../reports"
+
+fail2ban_conf_path: /etc/fail2ban/jail.conf
+fail2ban_local_path: /etc/fail2ban/jail.local
+fail2ban_jaild_dir: /etc/fail2ban/jail.d
+
+fail2ban_sshd_expected: "{{ fail2ban_sshd_settings }}"

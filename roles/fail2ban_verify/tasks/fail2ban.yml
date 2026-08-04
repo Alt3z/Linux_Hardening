@@ -1,0 +1,62 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ fail2ban_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Collect service facts
+  ansible.builtin.service_facts:
+
+- name: Check jail.conf exists
+  ansible.builtin.stat:
+    path: "{{ fail2ban_conf_path }}"
+  register: fail2ban_conf_stat
+
+- name: Check jail.local exists
+  ansible.builtin.stat:
+    path: "{{ fail2ban_local_path }}"
+  register: fail2ban_local_stat
+
+- name: Find jail.d config files
+  ansible.builtin.find:
+    paths: "{{ fail2ban_jaild_dir }}"
+    patterns: ["*.conf", "*.local"]
+    file_type: file
+  register: fail2ban_jaild_find
+  failed_when: false
+
+- name: Read jail.conf content
+  ansible.builtin.command: "cat {{ fail2ban_conf_path }}"
+  register: fail2ban_conf_content
+  changed_when: false
+  when: fail2ban_conf_stat.stat.exists
+
+- name: Read jail.d files content
+  ansible.builtin.command: "cat {{ item }}"
+  register: fail2ban_jaild_content
+  changed_when: false
+  loop: "{{ (fail2ban_jaild_find.files | default([]) | map(attribute='path') | list | sort) }}"
+
+- name: Read jail.local content
+  ansible.builtin.command: "cat {{ fail2ban_local_path }}"
+  register: fail2ban_local_content
+  changed_when: false
+  when: fail2ban_local_stat.stat.exists
+
+- name: Build combined config lines in override order
+  ansible.builtin.set_fact:
+    fail2ban_combined_lines: >-
+      {{
+        (fail2ban_conf_content.stdout_lines | default([]))
+        + (fail2ban_jaild_content.results | default([]) | map(attribute='stdout_lines') | list | flatten)
+        + (fail2ban_local_content.stdout_lines | default([]))
+      }}
+
+- name: Generate fail2ban report
+  ansible.builtin.template:
+    src: fail2ban_report.j2
+    dest: "{{ fail2ban_reports_dir }}/{{ inventory_hostname }}/fail2ban.txt"
+  delegate_to: localhost
+  become: false

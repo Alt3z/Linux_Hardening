@@ -1,0 +1,6 @@
+---
+- name: Harden fail2ban
+  hosts: linux_hosts
+  become: true
+  roles:
+    - fail2ban_hardening

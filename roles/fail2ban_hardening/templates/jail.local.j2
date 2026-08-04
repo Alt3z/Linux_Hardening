@@ -1,0 +1,10 @@
+# Managed by Ansible - Linux_Hardening project
+# {{ ansible_managed }}
+
+[sshd]
+enabled = {{ fail2ban_sshd_settings.enabled }}
+port = {{ fail2ban_sshd_settings.port }}
+filter = {{ fail2ban_sshd_settings.filter }}
+logpath = {{ fail2ban_sshd_settings.logpath }}
+maxretry = {{ fail2ban_sshd_settings.maxretry }}
+bantime = {{ fail2ban_sshd_settings.bantime }}

@@ -1,7 +1,12 @@
+---
 - name: Collect information about services
   ansible.builtin.service_facts:
-  tags: [collect_info]
+  tags: [always]
 
-- name: Verify ssh service
-  ansible.builtin.import_tasks: verify_ssh_service.yml
-  tags: [ssh_service]
+- name: Verify iptables / netfilter-persistent
+  ansible.builtin.import_tasks: iptables.yml
+  tags: [iptables]
+
+- name: Verify Kaspersky services
+  ansible.builtin.import_tasks: kaspersky.yml
+  tags: [kaspersky]

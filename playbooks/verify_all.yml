@@ -1,0 +1,15 @@
+---
+- name: Verify installed packages
+  ansible.builtin.import_playbook: verify_packages.yml
+
+- name: Verify SSH hardening
+  ansible.builtin.import_playbook: verify_ssh_hardening.yml
+
+- name: Verify password policy
+  ansible.builtin.import_playbook: verify_password_policy.yml
+
+- name: Verify fail2ban
+  ansible.builtin.import_playbook: verify_fail2ban.yml
+
+- name: Verify services
+  ansible.builtin.import_playbook: verify_services.yml

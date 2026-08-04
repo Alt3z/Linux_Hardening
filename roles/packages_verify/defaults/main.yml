@@ -1,0 +1,8 @@
+packages_reports_dir: "{{ playbook_dir }}/../reports"
+
+packages_expected:
+  - libpam-pwquality
+  - rsyslog
+  - fail2ban
+  - iptables
+  - iptables-persistent

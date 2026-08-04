@@ -1,0 +1,18 @@
+Отчёт по установленным пакетам
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Проверка пакетов ===
+{% set ns = namespace(failed=0) %}
+{% for pkg in packages_expected %}
+{% set installed = pkg in ansible_facts.packages %}
+{% if not installed %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+{% set version = (ansible_facts.packages[pkg][0].version if installed else '-') %}
+{{ '%-24s' | format(pkg) }} версия: {{ '%-20s' | format(version) }} [{{ 'OK' if installed else 'FAIL' }}]
+{% endfor %}
+
+{% if ns.failed > 0 %}
+=== ИТОГ: не установлено пакетов ({{ ns.failed }}) ===
+{% else %}
+=== ИТОГ: все пакеты установлены ===
+{% endif %}

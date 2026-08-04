@@ -1,0 +1,6 @@
+---
+- name: Run full hardening
+  ansible.builtin.import_playbook: hardening_all.yml
+
+- name: Run full verification
+  ansible.builtin.import_playbook: verify_all.yml

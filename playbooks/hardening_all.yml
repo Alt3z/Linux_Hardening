@@ -1,0 +1,12 @@
+---
+- name: Install required packages
+  ansible.builtin.import_playbook: install_packages.yml
+
+- name: Harden SSH
+  ansible.builtin.import_playbook: ssh_hardening.yml
+
+- name: Harden password policy
+  ansible.builtin.import_playbook: password_policy_hardening.yml
+
+- name: Harden fail2ban
+  ansible.builtin.import_playbook: fail2ban_hardening.yml

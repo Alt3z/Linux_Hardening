@@ -1,0 +1,29 @@
+---
+- name: Install required packages
+  hosts: linux_hosts
+  become: true
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Pre-answer iptables-persistent debconf prompts (avoid interactive dialog)
+      ansible.builtin.debconf:
+        name: iptables-persistent
+        question: "{{ item }}"
+        value: "false"
+        vtype: boolean
+      loop:
+        - iptables-persistent/autosave_v4
+        - iptables-persistent/autosave_v6
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - libpam-pwquality
+          - rsyslog
+          - fail2ban
+          - iptables
+          - iptables-persistent
+        state: present
