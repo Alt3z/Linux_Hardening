@@ -8,14 +8,14 @@ Ansible-проект для базовой безопасной настройк
 
 | Модуль | Настройка | Проверка |
 |---|---|---|
-| Пакеты | [README_install_packages.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_install_packages.md) | [README_packages_verify.md](README_packages_verify.md) |
-| SSH-ключ | [README_generate_ssh_key.md](README_generate_ssh_key.md) | — |
-| SSH | [README_ssh_hardening.md](README_ssh_hardening.md) | [README_ssh_verify.md](README_ssh_verify.md) |
-| Политика паролей | [README_password_policy_hardening.md](README_password_policy_hardening.md) | [README_password_policy_verify.md](README_password_policy_verify.md) |
-| Fail2ban | [README_fail2ban_hardening.md](README_fail2ban_hardening.md) | [README_fail2ban_verify.md](README_fail2ban_verify.md) |
-| Службы (iptables, Kaspersky) | — | [README_services_verify.md](README_services_verify.md) |
+| Пакеты | [README_install_packages.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_install_packages.md) | [README_packages_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_packages_verify.md) |
+| SSH-ключ | [README_generate_ssh_key.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_generate_ssh_key.md) | — |
+| SSH | [README_ssh_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_ssh_hardening.md) | [README_ssh_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_ssh_verify.md) |
+| Политика паролей | [README_password_policy_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_password_policy_hardening.md) | [README_password_policy_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_password_policy_verify.md) |
+| Fail2ban | [README_fail2ban_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_hardening.md) | [README_fail2ban_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_verify.md) |
+| Службы (iptables, Kaspersky) | — | [README_services_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_services_verify.md) |
 
-Требования к окружению — [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md).
+Требования к окружению — [system_requirements](https://github.com/Alt3z/Linux_Hardening/blob/main/system_requirements).
 
 ## Структура проекта
 
