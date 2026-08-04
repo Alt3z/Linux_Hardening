@@ -1,0 +1,47 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ password_policy_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Read /etc/login.defs
+  ansible.builtin.command: cat /etc/login.defs
+  register: login_defs_result
+  changed_when: false
+
+- name: Extract raw values for tracked parameters
+  ansible.builtin.set_fact:
+    login_defs_raw:
+      PASS_MAX_DAYS: "{{ login_defs_result.stdout_lines | select('match', 'PASS_MAX_DAYS\\s+') | list | first | default('') | regex_replace('^PASS_MAX_DAYS\\s+(\\S+).*$', '\\1') }}"
+      PASS_MIN_DAYS: "{{ login_defs_result.stdout_lines | select('match', 'PASS_MIN_DAYS\\s+') | list | first | default('') | regex_replace('^PASS_MIN_DAYS\\s+(\\S+).*$', '\\1') }}"
+      PASS_WARN_AGE: "{{ login_defs_result.stdout_lines | select('match', 'PASS_WARN_AGE\\s+') | list | first | default('') | regex_replace('^PASS_WARN_AGE\\s+(\\S+).*$', '\\1') }}"
+      ENCRYPT_METHOD: "{{ login_defs_result.stdout_lines | select('match', 'ENCRYPT_METHOD\\s+') | list | first | default('') | regex_replace('^ENCRYPT_METHOD\\s+(\\S+).*$', '\\1') }}"
+
+- name: Evaluate compliance for each parameter
+  ansible.builtin.set_fact:
+    login_defs_checks:
+      PASS_MAX_DAYS:
+        value: "{{ login_defs_raw.PASS_MAX_DAYS }}"
+        expected: "= {{ login_defs_expected.PASS_MAX_DAYS }}"
+        ok: "{{ (login_defs_raw.PASS_MAX_DAYS | int(-1)) == login_defs_expected.PASS_MAX_DAYS }}"
+      PASS_MIN_DAYS:
+        value: "{{ login_defs_raw.PASS_MIN_DAYS }}"
+        expected: "{{ login_defs_expected.PASS_MIN_DAYS_MIN }}–{{ login_defs_expected.PASS_MIN_DAYS_MAX }}"
+        ok: "{{ (login_defs_raw.PASS_MIN_DAYS | int(-1)) >= login_defs_expected.PASS_MIN_DAYS_MIN and (login_defs_raw.PASS_MIN_DAYS | int(-1)) <= login_defs_expected.PASS_MIN_DAYS_MAX }}"
+      PASS_WARN_AGE:
+        value: "{{ login_defs_raw.PASS_WARN_AGE }}"
+        expected: "{{ login_defs_expected.PASS_WARN_AGE_MIN }}–{{ login_defs_expected.PASS_WARN_AGE_MAX }}"
+        ok: "{{ (login_defs_raw.PASS_WARN_AGE | int(-1)) >= login_defs_expected.PASS_WARN_AGE_MIN and (login_defs_raw.PASS_WARN_AGE | int(-1)) <= login_defs_expected.PASS_WARN_AGE_MAX }}"
+      ENCRYPT_METHOD:
+        value: "{{ login_defs_raw.ENCRYPT_METHOD }}"
+        expected: "= {{ login_defs_expected.ENCRYPT_METHOD }}"
+        ok: "{{ login_defs_raw.ENCRYPT_METHOD | upper == login_defs_expected.ENCRYPT_METHOD | upper }}"
+
+- name: Generate login.defs report
+  ansible.builtin.template:
+    src: login_defs_report.j2
+    dest: "{{ password_policy_reports_dir }}/{{ inventory_hostname }}/login_defs.txt"
+  delegate_to: localhost
+  become: false

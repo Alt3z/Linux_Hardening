@@ -1,0 +1,71 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ ssh_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Get effective sshd configuration
+  ansible.builtin.command: sshd -T
+  register: sshd_effective_config
+  changed_when: false
+
+- name: Parse effective sshd configuration into a dict
+  ansible.builtin.set_fact:
+    sshd_effective_dict: "{{ sshd_effective_dict | default({}) | combine({ (item.split()[0]): (item.split()[1:] | join(' ')) }) }}"
+  loop: "{{ sshd_effective_config.stdout_lines }}"
+  loop_control:
+    label: "{{ item.split()[0] }}"
+
+- name: Evaluate compliance for scalar directives
+  ansible.builtin.set_fact:
+    ssh_directive_checks: "{{ ssh_directive_checks | default({}) | combine({ item.key: {
+        'value': sshd_effective_dict[item.key | lower] | default('(отсутствует)'),
+        'expected': item.value,
+        'ok': (sshd_effective_dict[item.key | lower] | default('') | lower) == (item.value | lower)
+      } }) }}"
+  loop: "{{ ssh_hardening_expected | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Build expected AllowUsers list
+  ansible.builtin.set_fact:
+    ssh_expected_allow_users: "{{ ([ansible_user] + ssh_hardening_extra_allow_users) | unique | sort }}"
+
+- name: Evaluate compliance for AllowUsers
+  ansible.builtin.set_fact:
+    ssh_allowusers_check:
+      value: "{{ sshd_effective_dict['allowusers'] | default('(отсутствует)') }}"
+      expected: "{{ ssh_expected_allow_users | join(' ') }}"
+      ok: "{{ (sshd_effective_dict['allowusers'] | default('')).split() | sort == ssh_expected_allow_users }}"
+
+- name: Evaluate compliance for AcceptEnv
+  ansible.builtin.set_fact:
+    ssh_acceptenv_check:
+      value: "{{ sshd_effective_dict['acceptenv'] | default('(отсутствует)') }}"
+      expected: "{{ ssh_hardening_accept_env }}"
+      ok: "{{ 'LANG' in (sshd_effective_dict['acceptenv'] | default('')) }}"
+
+- name: Evaluate compliance for Subsystem sftp
+  ansible.builtin.set_fact:
+    ssh_subsystem_check:
+      value: "{{ sshd_effective_dict['subsystem'] | default('(отсутствует)') }}"
+      expected: "{{ ssh_hardening_sftp_subsystem }}"
+      ok: "{{ (sshd_effective_dict['subsystem'] | default('')) == ssh_hardening_sftp_subsystem }}"
+
+- name: Read raw sshd_config
+  ansible.builtin.command: cat /etc/ssh/sshd_config
+  register: sshd_raw_config
+  changed_when: false
+
+- name: Extract meaningful raw config lines
+  ansible.builtin.set_fact:
+    sshd_raw_lines: "{{ sshd_raw_config.stdout_lines | reject('match', '^\\s*#') | reject('match', '^\\s*$') | list }}"
+
+- name: Generate sshd_config verification report
+  ansible.builtin.template:
+    src: ssh_config_report.j2
+    dest: "{{ ssh_reports_dir }}/{{ inventory_hostname }}/ssh_config.txt"
+  delegate_to: localhost
+  become: false

@@ -1,0 +1,19 @@
+password_policy_reports_dir: "{{ playbook_dir }}/../reports"
+
+login_defs_expected:
+  PASS_MAX_DAYS: 90
+  PASS_MIN_DAYS_MIN: 1
+  PASS_MIN_DAYS_MAX: 7
+  PASS_WARN_AGE_MIN: 7
+  PASS_WARN_AGE_MAX: 14
+  ENCRYPT_METHOD: SHA512
+
+pam_pwquality_expected:
+  module: pam_pwquality.so
+  control: requisite
+  retry: 3
+  minlen: 12
+  ucredit: -1
+  lcredit: -1
+  dcredit: -1
+  ocredit: -1

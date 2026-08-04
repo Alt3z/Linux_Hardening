@@ -5,3 +5,22 @@ ansible_become_password: "{{ vault_ansible_become_password }}"
 ansible_ssh_private_key_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key"
 
 ssh_hardening_pubkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key.pub"
+
+# Дополнительные пользователи, которым разрешён SSH-доступ, помимо ansible_user
+ssh_hardening_extra_allow_users: ["qwerty", "test_user"]
+
+# Единый источник правды для sshd_config — используется и при настройке, и при проверке
+ssh_hardening_expected:
+  LogLevel: VERBOSE
+  PermitRootLogin: "no"
+  PubkeyAuthentication: "yes"
+  AuthorizedKeysFile: ".ssh/authorized_keys"
+  PasswordAuthentication: "no"
+  PermitEmptyPasswords: "no"
+  KbdInteractiveAuthentication: "no"
+  UsePAM: "yes"
+  X11Forwarding: "no"
+  PrintMotd: "no"
+
+ssh_hardening_accept_env: "LANG LC_*"
+ssh_hardening_sftp_subsystem: "sftp /usr/lib/openssh/sftp-server"

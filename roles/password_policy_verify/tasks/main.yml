@@ -1,0 +1,11 @@
+- name: Print lastlog
+  ansible.builtin.import_tasks: lastlog.yml
+  tags: [lastlog]
+
+- name: Print login.defs password policy
+  ansible.builtin.import_tasks: login_defs.yml
+  tags: [login_defs]
+
+- name: Verify PAM common-password configuration
+  ansible.builtin.import_tasks: pam_common_password.yml
+  tags: [pam_common_password]

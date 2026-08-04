@@ -1,0 +1,25 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ ssh_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Check /var/log/auth.log exists
+  ansible.builtin.stat:
+    path: /var/log/auth.log
+  register: auth_log_stat
+
+- name: Get last lines of auth.log
+  ansible.builtin.command: tail -n 30 /var/log/auth.log
+  register: auth_log_tail
+  changed_when: false
+  when: auth_log_stat.stat.exists
+
+- name: Generate auth.log report
+  ansible.builtin.template:
+    src: ssh_auth_log_report.j2
+    dest: "{{ ssh_reports_dir }}/{{ inventory_hostname }}/ssh_auth_log.txt"
+  delegate_to: localhost
+  become: false

@@ -1,0 +1,9 @@
+Отчёт по доступу SSH
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+{{ '%-30s' | format('.ssh права (0700)') }} [{{ 'OK' if (ssh_dir_stat.stat.exists and ssh_dir_stat.stat.mode == '0700') else 'FAIL' }}]
+{{ '%-30s' | format('ключ в authorized_keys') }} [{{ 'OK' if authorized_keys_check.rc == 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход под root отклонён') }} [{{ 'OK' if root_login_attempt.rc != 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход по паролю отклонён') }} [{{ 'OK' if password_login_attempt.rc != 0 else 'FAIL' }}]
+{{ '%-30s' | format('вход по ключу работает') }} [{{ 'OK' if key_login_attempt.rc == 0 else 'FAIL' }}]

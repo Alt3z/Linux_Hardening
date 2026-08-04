@@ -1,0 +1,22 @@
+Отчёт по политике паролей
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Lastlog (полный вывод) ===
+{{ lastlog_result.stdout }}
+
+=== Lastlog (только успешные входы) ===
+{% for line in lastlog_authenticated_lines %}
+{{ line }}
+{% endfor %}
+
+{% for user in authenticated_users %}
+=== {{ user }} ===
+
+-- faillog --
+{{ (faillog_results.results | selectattr('item', 'equalto', user) | first).stdout }}
+
+-- chage -l --
+{{ (chage_results.results | selectattr('item', 'equalto', user) | first).stdout }}
+
+{% endfor %}

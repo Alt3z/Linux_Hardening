@@ -1,0 +1,15 @@
+Отчёт по политике паролей — /etc/login.defs
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Проверка параметров ===
+{% for name, check in login_defs_checks.items() %}
+{{ '%-16s' | format(name) }} значение: {{ '%-10s' | format(check.value) }} требуется: {{ '%-10s' | format(check.expected) }} [{{ 'OK' if check.ok else 'FAIL' }}]
+{% endfor %}
+
+{% set failed = login_defs_checks.values() | rejectattr('ok') | list %}
+{% if failed %}
+=== ИТОГ: обнаружены несоответствия ({{ failed | length }}) ===
+{% else %}
+=== ИТОГ: все проверки пройдены ===
+{% endif %}

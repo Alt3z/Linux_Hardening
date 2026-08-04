@@ -1,2 +1,19 @@
 ssh_verify_pubkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key.pub"
 ssh_verify_privkey_file: "{{ playbook_dir }}/../files/ssh_keys/linux_hardening_key"
+ssh_reports_dir: "{{ playbook_dir }}/../reports"
+
+ssh_hardening_managed_directives:
+  - Port
+  - LogLevel
+  - PermitRootLogin
+  - PubkeyAuthentication
+  - AuthorizedKeysFile
+  - PasswordAuthentication
+  - PermitEmptyPasswords
+  - AllowUsers
+  - KbdInteractiveAuthentication
+  - UsePAM
+  - X11Forwarding
+  - PrintMotd
+  - AcceptEnv
+  - Subsystem

@@ -1,0 +1,7 @@
+---
+- name: Verify services
+  hosts: linux_hosts
+  become: true
+  gather_facts: false
+  roles:
+    - services_verify

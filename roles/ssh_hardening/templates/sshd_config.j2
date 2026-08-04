@@ -1,22 +1,17 @@
 # Managed by Ansible - Linux_Hardening project
 # {{ ansible_managed }}
 
-Port {{ ssh_hardening_port }}
-Protocol 2
+LogLevel {{ ssh_hardening_expected.LogLevel }}
+PermitRootLogin {{ ssh_hardening_expected.PermitRootLogin }}
+PubkeyAuthentication {{ ssh_hardening_expected.PubkeyAuthentication }}
+AuthorizedKeysFile {{ ssh_hardening_expected.AuthorizedKeysFile }}
+PasswordAuthentication {{ ssh_hardening_expected.PasswordAuthentication }}
+PermitEmptyPasswords {{ ssh_hardening_expected.PermitEmptyPasswords }}
+AllowUsers {{ ([ansible_user] + ssh_hardening_extra_allow_users) | unique | join(' ') }}
+KbdInteractiveAuthentication {{ ssh_hardening_expected.KbdInteractiveAuthentication }}
+UsePAM {{ ssh_hardening_expected.UsePAM }}
+X11Forwarding {{ ssh_hardening_expected.X11Forwarding }}
+PrintMotd {{ ssh_hardening_expected.PrintMotd }}
+AcceptEnv {{ ssh_hardening_accept_env }}
 
-PermitRootLogin {{ ssh_hardening_permit_root_login }}
-PasswordAuthentication {{ ssh_hardening_password_auth }}
-PubkeyAuthentication {{ ssh_hardening_pubkey_auth }}
-ChallengeResponseAuthentication no
-KbdInteractiveAuthentication no
-UsePAM yes
-
-PermitEmptyPasswords no
-X11Forwarding no
-MaxAuthTries {{ ssh_hardening_max_auth_tries }}
-ClientAliveInterval {{ ssh_hardening_client_alive_interval }}
-ClientAliveCountMax {{ ssh_hardening_client_alive_count_max }}
-
-AllowUsers {{ ssh_hardening_allow_users }}
-
-Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem {{ ssh_hardening_sftp_subsystem }}

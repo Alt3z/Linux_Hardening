@@ -1,0 +1,13 @@
+Отчёт по логам аутентификации — /var/log/auth.log
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+Файл существует: {{ 'да' if auth_log_stat.stat.exists else 'НЕТ' }}
+{% if auth_log_stat.stat.exists %}
+Размер: {{ auth_log_stat.stat.size }} байт
+
+=== Последние 30 строк ===
+{{ auth_log_tail.stdout }}
+{% else %}
+FAIL: /var/log/auth.log отсутствует — проверь, включён ли rsyslog и не переехало ли логирование целиком в journald.
+{% endif %}

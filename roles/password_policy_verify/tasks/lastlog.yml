@@ -1,0 +1,48 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ password_policy_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Get lastlog output
+  ansible.builtin.command: lastlog
+  register: lastlog_result
+  changed_when: false
+
+- name: Extract lines with actual authentication
+  ansible.builtin.set_fact:
+    lastlog_authenticated_lines: "{{ lastlog_result.stdout_lines[1:] | reject('search', 'Never logged in') | list }}"
+
+- name: Extract usernames with actual logins
+  ansible.builtin.set_fact:
+    authenticated_users: >-
+      {{
+        lastlog_authenticated_lines
+        | map('regex_replace', '^(\S+)\s.*$', '\1')
+        | list
+      }}
+
+- name: Get faillog for authenticated users
+  ansible.builtin.command: "faillog -u {{ item }}"
+  environment:
+    LC_ALL: ru_RU.UTF-8
+  register: faillog_results
+  changed_when: false
+  loop: "{{ authenticated_users }}"
+
+- name: Get chage info for authenticated users
+  ansible.builtin.command: "chage -l {{ item }}"
+  environment:
+    LC_ALL: ru_RU.UTF-8
+  register: chage_results
+  changed_when: false
+  loop: "{{ authenticated_users }}"
+
+- name: Generate password policy report
+  ansible.builtin.template:
+    src: report.j2
+    dest: "{{ password_policy_reports_dir }}/{{ inventory_hostname }}/password_policy.txt"
+  delegate_to: localhost
+  become: false

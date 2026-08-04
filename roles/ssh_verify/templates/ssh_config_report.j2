@@ -1,0 +1,32 @@
+Отчёт по конфигурации SSH — sshd_config
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Проверка параметров (эффективная конфигурация, sshd -T) ===
+{% for name, check in ssh_directive_checks.items() %}
+{{ '%-28s' | format(name) }} значение: {{ '%-30s' | format(check.value) }} требуется: {{ '%-15s' | format(check.expected) }} [{{ 'OK' if check.ok else 'FAIL' }}]
+{% endfor %}
+{{ '%-28s' | format('AllowUsers') }} значение: {{ '%-30s' | format(ssh_allowusers_check.value) }} требуется: {{ '%-15s' | format(ssh_allowusers_check.expected) }} [{{ 'OK' if ssh_allowusers_check.ok else 'FAIL' }}]
+{{ '%-28s' | format('AcceptEnv') }} значение: {{ '%-30s' | format(ssh_acceptenv_check.value) }} требуется: {{ '%-15s' | format(ssh_acceptenv_check.expected) }} [{{ 'OK' if ssh_acceptenv_check.ok else 'FAIL' }}]
+{{ '%-28s' | format('Subsystem sftp') }} значение: {{ '%-30s' | format(ssh_subsystem_check.value) }} требуется: {{ '%-15s' | format(ssh_subsystem_check.expected) }} [{{ 'OK' if ssh_subsystem_check.ok else 'FAIL' }}]
+
+{% set all_checks = (ssh_directive_checks.values() | list) + [ssh_allowusers_check, ssh_acceptenv_check, ssh_subsystem_check] %}
+{% set failed = all_checks | rejectattr('ok') | list %}
+{% if failed %}
+=== ИТОГ ПО ПАРАМЕТРАМ: обнаружены несоответствия ({{ failed | length }}) ===
+{% else %}
+=== ИТОГ ПО ПАРАМЕТРАМ: все проверки пройдены ===
+{% endif %}
+
+=== Директивы в sshd_config сверх управляемого проектом набора ===
+{% set found_extra = [] %}
+{% for line in sshd_raw_lines %}
+{% set directive = line.split()[0] %}
+{% if directive not in ssh_hardening_managed_directives %}
+{{ line }}
+{% set _ = found_extra.append(line) %}
+{% endif %}
+{% endfor %}
+{% if not found_extra %}
+(не найдено — конфиг содержит только управляемые проектом директивы)
+{% endif %}
