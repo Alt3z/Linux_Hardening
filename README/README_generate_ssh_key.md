@@ -31,7 +31,7 @@ vault_ssh_key_passphrase: "..."
 ```bash
 pip install bcrypt --break-system-packages
 ```
-Без него — ошибка `Need bcrypt module`. Подробности — [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md).
+Без него — ошибка `Need bcrypt module`. Подробности — [system_requirements.md](https://github.com/Alt3z/Linux_Hardening/blob/main/system_requirements.md).
 
 ## Запуск
 
