@@ -67,9 +67,16 @@ ansible-galaxy collection install -r requirements.yml
 echo "пароль_от_vault" > vault_pass && chmod 600 vault_pass
 ansible-vault edit inventory/group_vars/linux_hosts/vault.yml
 
-# SSH
+# генерация ключей + добавление ключа в ssh-agent (на ключе стоит пароль, без агента не получится запустить ансибл)
 ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
 eval "$(ssh-agent -s)" && ssh-add files/ssh_keys/linux_hardening_key
+ssh-add -l
+
+# убить агент в конце
+ssh-agent -k
+ssh-add -l
+
+# SSH
 ansible-playbook playbooks/ssh_hardening.yml
 ansible-playbook playbooks/verify_ssh_hardening.yml
 
