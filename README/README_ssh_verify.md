@@ -1,4 +1,4 @@
-k# Linux Hardening — SSH Verify Module
+## Linux Hardening — SSH Verify Module
 
 Playbook для проверки того, что `ssh_hardening` реально применился и работает: конфиг, реальный доступ и факт логирования.
 
