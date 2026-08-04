@@ -15,7 +15,7 @@ Ansible-проект для базовой безопасной настройк
 | Fail2ban | [README_fail2ban_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_hardening.md) | [README_fail2ban_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_verify.md) |
 | Службы (iptables, Kaspersky) | — | [README_services_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_services_verify.md) |
 
-Требования к окружению — [system_requirements](https://github.com/Alt3z/Linux_Hardening/blob/main/system_requirements).
+Требования к окружению — [system_requirements.md](https://github.com/Alt3z/Linux_Hardening/blob/main/system_requirements.md).
 
 ## Структура проекта
 
