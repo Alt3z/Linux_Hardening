@@ -8,7 +8,7 @@ Ansible-проект для базовой безопасной настройк
 
 | Модуль | Настройка | Проверка |
 |---|---|---|
-| Пакеты | [README_install_packages.md](README_install_packages.md) | [README_packages_verify.md](README_packages_verify.md) |
+| Пакеты | [README_install_packages.md](https://github.com/Alt3z/README/README_install_packages.md) | [README_packages_verify.md](README_packages_verify.md) |
 | SSH-ключ | [README_generate_ssh_key.md](README_generate_ssh_key.md) | — |
 | SSH | [README_ssh_hardening.md](README_ssh_hardening.md) | [README_ssh_verify.md](README_ssh_verify.md) |
 | Политика паролей | [README_password_policy_hardening.md](README_password_policy_hardening.md) | [README_password_policy_verify.md](README_password_policy_verify.md) |
@@ -67,15 +67,15 @@ ansible-galaxy collection install -r requirements.yml
 echo "пароль_от_vault" > vault_pass && chmod 600 vault_pass
 ansible-vault edit inventory/group_vars/linux_hosts/vault.yml
 
-# пакеты на хостах
-ansible-playbook playbooks/install_packages.yml
-ansible-playbook playbooks/verify_packages.yml
-
 # SSH
 ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
 eval "$(ssh-agent -s)" && ssh-add files/ssh_keys/linux_hardening_key
 ansible-playbook playbooks/ssh_hardening.yml
 ansible-playbook playbooks/verify_ssh_hardening.yml
+
+# пакеты на хостах
+ansible-playbook playbooks/install_packages.yml
+ansible-playbook playbooks/verify_packages.yml
 
 # политика паролей
 ansible-playbook playbooks/password_policy_hardening.yml
