@@ -23,16 +23,18 @@ Ansible-проект для базовой безопасной настройк
 Linux_Hardening/
 ├── ansible.cfg
 ├── requirements.yml
-├── vault_pass # НЕ коммитится
+├── vault_pass # НЕ комитится в реальных проектах
+├── vault_pass.example # информация о файле vault_pass
 ├── system_requirements
 ├── inventory/
 │ ├── hosts.yml
 │ └── group_vars/
 │ └── linux_hosts/
 │ ├── vars.yml
-│ └── vault.yml # зашифровано, НЕ коммитится в открытом виде
+│ └── vault.yml # зашифровано, НЕ комитится в реальных проектах
+│ └── vault.yml.example # информация о файле vault.yml
 ├── files/
-│ └── ssh_keys/ # генерируется, в .gitignore
+│ └── ssh_keys/ # генерируется, в .gitignore (здесь должен быть открытый и закрытый ключи, примеры есть внутри (НЕ комитится в реальных проектах))
 ├── reports/ # генерируется, в .gitignore
 ├── roles/
 │ ├── ssh_keygen/
@@ -89,4 +91,8 @@ ansible-playbook playbooks/verify_services.yml
 
 ## Отчёты
 
-Каждая `*_verify`-роль пишет текстовый отчёт на control-ноду, не в терминал: reports/<host>/<модуль>.txt
+Каждая `*_verify`-роль пишет текстовый отчёт на control-ноду, не в терминал: 
+
+```
+reports/<host>/<модуль>.txt
+```
