@@ -8,7 +8,7 @@ Ansible-проект для базовой безопасной настройк
 
 | Модуль | Настройка | Проверка |
 |---|---|---|
-| Пакеты | [README_install_packages.md](https://github.com/Alt3z/README/README_install_packages.md) | [README_packages_verify.md](README_packages_verify.md) |
+| Пакеты | [README_install_packages.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_install_packages.md) | [README_packages_verify.md](README_packages_verify.md) |
 | SSH-ключ | [README_generate_ssh_key.md](README_generate_ssh_key.md) | — |
 | SSH | [README_ssh_hardening.md](README_ssh_hardening.md) | [README_ssh_verify.md](README_ssh_verify.md) |
 | Политика паролей | [README_password_policy_hardening.md](README_password_policy_hardening.md) | [README_password_policy_verify.md](README_password_policy_verify.md) |
