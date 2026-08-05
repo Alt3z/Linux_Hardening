@@ -86,23 +86,62 @@ Linux_Hardening/
 └── all.yml            # site.yml + verify_all.yml
 ```
 
-## Быстрый старт
+## Старт
 
-```bash
-# см. system_requirements для полного списка пакетов на control-ноде
-ansible-galaxy collection install -r requirements.yml
+1. Установка пакетов из system_requirements
+
+2.1. Vault — пароль и секреты
+
+```
 echo "пароль_от_vault" > vault_pass && chmod 600 vault_pass
 ansible-vault edit inventory/group_vars/linux_hosts/vault.yml
+```
 
-# генерация ключей + добавление ключа в ssh-agent (на ключе стоит пароль, без агента не получится запустить ансибл)
+2.2. Vault Внутри: 
+
+```
+vault_ansible_password: "..."
+vault_ansible_become_password: "..."
+vault_ssh_key_passphrase: "..."
+```
+
+3. SSH-ключ
+3.1. Автоматическое создание:
+```
 ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
-eval "$(ssh-agent -s)" && ssh-add files/ssh_keys/linux_hardening_key
-ssh-add -l
+```
+3.2. Либо положить руками и выдать права:
+```
+chmod 600 files/ssh_keys/linux_hardening_key
+chmod 644 files/ssh_keys/linux_hardening_key.pub
+```
+4. ssh-agent, если ключ с паролем
 
-# убить агент в конце
+```
+eval "$(ssh-agent -s)"
+ssh-add files/ssh_keys/linux_hardening_key
+ssh-add -l   # проверка
+```
+
+После работы:
+```
 ssh-agent -k
-ssh-add -l
+```
 
+5. Инвентарь и переменные
+
+```
+inventory/hosts.yml — IP-адреса test1/test2.
+inventory/group_vars/linux_hosts/vars.yml — проверить и поправить под реальные значения:
+ssh_hardening_extra_allow_users: [...]
+zabbix_server_ip: "..."
+glpi_agent_server: "..."
+wazuh_manager_ip: "..."
+```
+
+## Плейбуки
+
+```bash
 # SSH
 ansible-playbook playbooks/ssh_hardening.yml
 ansible-playbook playbooks/verify_ssh_hardening.yml
