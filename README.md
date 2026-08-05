@@ -14,6 +14,10 @@ Ansible-проект для базовой безопасной настройк
 | Политика паролей | [README_password_policy_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_password_policy_hardening.md) | [README_password_policy_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_password_policy_verify.md) |
 | Fail2ban | [README_fail2ban_hardening.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_hardening.md) | [README_fail2ban_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_fail2ban_verify.md) |
 | Службы (iptables, Kaspersky) | — | [README_services_verify.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_services_verify.md) |
+| GLPI-агент | [README_glpi_agent.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_glpi_agent.md) | входит туда же |
+| Zabbix-агент | [README_zabbix_agent.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_zabbix_agent.md) | входит туда же |
+| Wazuh-агент | [README_wazuh_agent.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_wazuh_agent.md) | входит туда же |
+| Сводный отчёт | — | [README_aggregate_reports.md](https://github.com/Alt3z/Linux_Hardening/blob/main/README/README_aggregate_reports.md) |
 
 Требования к окружению — [system_requirements.md](https://github.com/Alt3z/Linux_Hardening/blob/main/system_requirements.md).
 
@@ -35,6 +39,8 @@ Linux_Hardening/
 │ └── vault.yml.example # информация о файле vault.yml
 ├── files/
 │ └── ssh_keys/ # генерируется, в .gitignore (здесь должен быть открытый и закрытый ключи, примеры есть внутри (НЕ комитится в реальных проектах))
+│ ├── glpi-agent-installer/   # скачивается автоматически или кладётся вручную
+│ └── wazuh-agent-installer/  # аналогично
 ├── reports/ # генерируется, в .gitignore
 ├── roles/
 │ ├── ssh_keygen/
@@ -46,6 +52,15 @@ Linux_Hardening/
 │ ├── fail2ban_verify/
 │ ├── packages_verify/
 │ └── services_verify/
+│ ├── sysctl_hardening/
+│ ├── sysctl_verify/
+│ ├── glpi_agent_hardening/
+│ ├── glpi_agent_verify/
+│ ├── zabbix_agent_hardening/
+│ ├── zabbix_agent_verify/
+│ ├── wazuh_agent_hardening/
+│ ├── wazuh_agent_verify/
+│ └── aggregate_reports/
 └── playbooks/
 ├── install_packages.yml
 ├── verify_packages.yml
@@ -57,6 +72,18 @@ Linux_Hardening/
 ├── fail2ban_hardening.yml
 ├── verify_fail2ban.yml
 └── verify_services.yml
+├── sysctl_hardening.yml
+├── verify_sysctl.yml
+├── glpi_agent_hardening.yml
+├── verify_glpi_agent.yml
+├── zabbix_agent_hardening.yml
+├── verify_zabbix_agent.yml
+├── wazuh_agent_hardening.yml
+├── verify_wazuh_agent.yml
+├── aggregate_reports.yml
+├── hardening_all.yml.yml # вся настройка сразу
+├── verify_all.yml    # все проверки сразу
+└── all.yml            # site.yml + verify_all.yml
 ```
 
 ## Быстрый старт
@@ -94,6 +121,21 @@ ansible-playbook playbooks/verify_fail2ban.yml
 
 # службы (iptables/Kaspersky)
 ansible-playbook playbooks/verify_services.yml
+
+# GLPI / Zabbix / Wazuh агенты
+ansible-playbook playbooks/glpi_agent_hardening.yml
+ansible-playbook playbooks/verify_glpi_agent.yml
+ansible-playbook playbooks/zabbix_agent_hardening.yml
+ansible-playbook playbooks/verify_zabbix_agent.yml
+ansible-playbook playbooks/wazuh_agent_hardening.yml
+ansible-playbook playbooks/verify_wazuh_agent.yml
+
+# сводный отчёт по каждому хосту
+ansible-playbook playbooks/aggregate_reports.yml
+
+ansible-playbook playbooks/site.yml         # вся настройка
+ansible-playbook playbooks/verify_all.yml    # все проверки + сборка отчёта
+ansible-playbook playbooks/all.yml           # всё сразу
 ```
 
 ## Отчёты
