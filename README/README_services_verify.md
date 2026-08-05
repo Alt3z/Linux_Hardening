@@ -10,12 +10,6 @@
 
 **`kaspersky`** — проверяет состояние служб `kesl.service` и `klnagent64.service`.
 
-⚠️ Имена systemd-юнитов для Kaspersky (`kesl`, `klnagent64`) — предположение по названию процессов. Точные имена стоит свериться на реальном хосте:
-```bash
-systemctl list-units --type=service | grep -i -E "kes|klnagent"
-```
-и поправить `kaspersky_services` в `roles/services_verify/defaults/main.yml`, если они отличаются.
-
 ## Все проверки собирают факты один раз
 
 `service_facts` вызывается один раз в начале роли с тегом `always` — гарантированно выполняется независимо от того, какой тег запрошен через `--tags`, так что данные о службах доступны любому отдельному блоку проверки.
