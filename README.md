@@ -94,6 +94,7 @@ Linux_Hardening/
 
 ```
 echo "пароль_от_vault" > vault_pass && chmod 600 vault_pass
+export EDITOR=nano # если нужен nano, а не vim
 ansible-vault edit inventory/group_vars/linux_hosts/vault.yml
 ```
 
