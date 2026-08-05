@@ -115,6 +115,7 @@ ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
 chmod 600 files/ssh_keys/linux_hardening_key
 chmod 644 files/ssh_keys/linux_hardening_key.pub
 ```
+
 4. ssh-agent, если ключ с паролем
 
 ```
