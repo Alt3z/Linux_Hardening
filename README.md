@@ -106,6 +106,7 @@ vault_ssh_key_passphrase: "..."
 ```
 
 3\. SSH-ключ
+
 3.1. Автоматическое создание:
 ```
 ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
