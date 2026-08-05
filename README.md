@@ -88,7 +88,7 @@ Linux_Hardening/
 
 ## Старт
 
-\1. Установка пакетов из system_requirements
+1\. Установка пакетов из system_requirements
 
 2.1. Vault — пароль и секреты
 
