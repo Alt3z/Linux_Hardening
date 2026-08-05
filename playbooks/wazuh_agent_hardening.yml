@@ -1,0 +1,6 @@
+---
+- name: Install and configure wazuh-agent
+  hosts: linux_hosts
+  become: true
+  roles:
+    - wazuh_agent_hardening

@@ -1,0 +1,10 @@
+# Managed by Ansible - Linux_Hardening project
+# {{ ansible_managed }}
+
+PidFile=/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+Server={{ zabbix_server_ip }}
+ServerActive={{ zabbix_server_ip }}
+Hostname={{ ansible_hostname }}
+Include=/etc/zabbix/zabbix_agentd.conf.d/*.conf

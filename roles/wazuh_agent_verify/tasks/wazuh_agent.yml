@@ -1,0 +1,34 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ wazuh_agent_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Collect service facts
+  ansible.builtin.service_facts:
+
+- name: Check ossec.conf exists
+  ansible.builtin.stat:
+    path: /var/ossec/etc/ossec.conf
+  register: wazuh_conf_stat
+
+- name: Read ossec.conf
+  ansible.builtin.command: cat /var/ossec/etc/ossec.conf
+  register: wazuh_conf_content
+  changed_when: false
+  when: wazuh_conf_stat.stat.exists
+
+- name: Get wazuh-agent connection status
+  ansible.builtin.command: /var/ossec/bin/agent-control -i 000
+  register: wazuh_agent_control_status
+  changed_when: false
+  failed_when: false
+
+- name: Generate wazuh-agent report
+  ansible.builtin.template:
+    src: wazuh_agent_report.j2
+    dest: "{{ wazuh_agent_reports_dir }}/{{ inventory_hostname }}/wazuh_agent.txt"
+  delegate_to: localhost
+  become: false

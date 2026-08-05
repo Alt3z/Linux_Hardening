@@ -1,0 +1,6 @@
+---
+- name: Verify zabbix-agent
+  hosts: linux_hosts
+  become: true
+  roles:
+    - zabbix_agent_verify

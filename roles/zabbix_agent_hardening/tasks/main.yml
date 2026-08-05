@@ -1,0 +1,29 @@
+---
+- name: Install zabbix-agent
+  ansible.builtin.apt:
+    name: zabbix-agent
+    state: present
+    update_cache: true
+
+- name: Create zabbix log directory
+  ansible.builtin.file:
+    path: /var/log/zabbix
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: "0755"
+
+- name: Deploy zabbix_agentd.conf
+  ansible.builtin.template:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart zabbix-agent
+
+- name: Enable and start zabbix-agent
+  ansible.builtin.service:
+    name: zabbix-agent
+    state: started
+    enabled: true

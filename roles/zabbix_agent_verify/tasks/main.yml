@@ -1,0 +1,4 @@
+---
+- name: Verify zabbix-agent
+  ansible.builtin.import_tasks: zabbix_agent.yml
+  tags: [zabbix_agent]

@@ -1,0 +1,26 @@
+---
+- name: Find all per-host report files
+  ansible.builtin.find:
+    paths: "{{ aggregate_reports_dir }}/{{ inventory_hostname }}"
+    patterns: "*.txt"
+    excludes: "_full_report.txt"
+  register: found_reports
+  delegate_to: localhost
+  become: false
+
+- name: Read content of each report file
+  ansible.builtin.slurp:
+    src: "{{ item.path }}"
+  register: report_contents
+  loop: "{{ found_reports.files | sort(attribute='path') }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  delegate_to: localhost
+  become: false
+
+- name: Generate combined report for the host
+  ansible.builtin.template:
+    src: full_report.j2
+    dest: "{{ aggregate_reports_dir }}/{{ inventory_hostname }}/_full_report.txt"
+  delegate_to: localhost
+  become: false

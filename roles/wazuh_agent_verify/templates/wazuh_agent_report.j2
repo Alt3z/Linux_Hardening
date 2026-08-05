@@ -1,0 +1,22 @@
+Отчёт по wazuh-agent
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Служба ===
+{% set svc = ansible_facts.services['wazuh-agent.service'] | default(None) %}
+{% if svc %}
+{{ '%-25s' | format('wazuh-agent.service') }} состояние: {{ '%-15s' | format(svc.state) }} [{{ 'OK' if svc.state == 'running' else 'FAIL' }}]
+{% else %}
+{{ '%-25s' | format('wazuh-agent.service') }} не найдена [FAIL]
+{% endif %}
+
+=== Конфигурация (/var/ossec/etc/ossec.conf) ===
+{% if wazuh_conf_stat.stat.exists %}
+{% set config_ok = ('<address>' + wazuh_manager_ip + '</address>') in wazuh_conf_content.stdout %}
+{{ '%-25s' | format('Manager IP совпадает') }} [{{ 'OK' if config_ok else 'FAIL' }}]
+{% else %}
+FAIL: /var/ossec/etc/ossec.conf отсутствует
+{% endif %}
+
+=== Статус подключения к менеджеру ===
+{{ wazuh_agent_control_status.stdout | default('(команда не вернула вывод)') }}

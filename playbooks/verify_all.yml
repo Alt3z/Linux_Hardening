@@ -13,3 +13,15 @@
 
 - name: Verify services
   ansible.builtin.import_playbook: verify_services.yml
+
+- name: Verify glpi-agent
+  ansible.builtin.import_playbook: verify_glpi_agent.yml
+
+- name: Verify zabbix-agent
+  ansible.builtin.import_playbook: verify_zabbix_agent.yml
+
+- name: Verify wazuh-agent
+  ansible.builtin.import_playbook: verify_wazuh_agent.yml
+
+- name: Aggregate all reports per host
+  ansible.builtin.import_playbook: aggregate_reports.yml

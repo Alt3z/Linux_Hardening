@@ -1,0 +1,25 @@
+Отчёт по glpi-agent
+Хост: {{ inventory_hostname }} ({{ ansible_host }})
+Дата: {{ ansible_date_time.iso8601 | default('') }}
+
+=== Установка и служба ===
+{{ '%-30s' | format('Бинарник установлен') }} [{{ 'OK' if glpi_agent_binary.stat.exists else 'FAIL' }}]
+{% set svc = ansible_facts.services['glpi-agent.service'] | default(None) %}
+{% if svc %}
+{{ '%-30s' | format('Служба glpi-agent') }} состояние: {{ '%-15s' | format(svc.state) }} [{{ 'OK' if svc.state == 'running' else 'FAIL' }}]
+{% else %}
+{{ '%-30s' | format('Служба glpi-agent') }} не найдена [FAIL]
+{% endif %}
+
+=== Конфигурация (/etc/glpi-agent/conf.d/00-install.cfg) ===
+{% if glpi_agent_config_content.rc == 0 %}
+{% set config_ok_server = ('server = ' + glpi_agent_server) in glpi_agent_config_content.stdout %}
+{% set config_ok_trust = glpi_agent_httpd_trust | join(',') in glpi_agent_config_content.stdout %}
+{{ '%-30s' | format('server совпадает') }} [{{ 'OK' if config_ok_server else 'FAIL' }}]
+{{ '%-30s' | format('httpd-trust совпадает') }} [{{ 'OK' if config_ok_trust else 'FAIL' }}]
+
+--- Содержимое файла ---
+{{ glpi_agent_config_content.stdout }}
+{% else %}
+FAIL: файл конфигурации отсутствует
+{% endif %}

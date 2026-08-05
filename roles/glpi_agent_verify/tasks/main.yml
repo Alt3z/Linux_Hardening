@@ -1,0 +1,4 @@
+---
+- name: Verify glpi-agent
+  ansible.builtin.import_tasks: glpi_agent.yml
+  tags: [glpi_agent]

@@ -1,0 +1,28 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ glpi_agent_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Collect service facts
+  ansible.builtin.service_facts:
+
+- name: Check glpi-agent binary exists
+  ansible.builtin.stat:
+    path: /usr/bin/glpi-agent
+  register: glpi_agent_binary
+
+- name: Read glpi-agent config file
+  ansible.builtin.command: cat /etc/glpi-agent/conf.d/00-install.cfg
+  register: glpi_agent_config_content
+  changed_when: false
+  failed_when: false
+
+- name: Generate glpi-agent report
+  ansible.builtin.template:
+    src: glpi_agent_report.j2
+    dest: "{{ glpi_agent_reports_dir }}/{{ inventory_hostname }}/glpi_agent.txt"
+  delegate_to: localhost
+  become: false

@@ -1,0 +1,36 @@
+---
+- name: Ensure per-host reports directory exists
+  ansible.builtin.file:
+    path: "{{ zabbix_agent_reports_dir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: localhost
+  become: false
+
+- name: Collect service facts
+  ansible.builtin.service_facts:
+
+- name: Check zabbix_agentd.conf exists
+  ansible.builtin.stat:
+    path: /etc/zabbix/zabbix_agentd.conf
+  register: zabbix_conf_stat
+
+- name: Read zabbix_agentd.conf
+  ansible.builtin.command: cat /etc/zabbix/zabbix_agentd.conf
+  register: zabbix_conf_content
+  changed_when: false
+  when: zabbix_conf_stat.stat.exists
+
+- name: Check zabbix-agent is listening on port 10050
+  ansible.builtin.wait_for:
+    port: 10050
+    host: 127.0.0.1
+    timeout: 5
+  register: zabbix_port_check
+  ignore_errors: true
+
+- name: Generate zabbix-agent report
+  ansible.builtin.template:
+    src: zabbix_agent_report.j2
+    dest: "{{ zabbix_agent_reports_dir }}/{{ inventory_hostname }}/zabbix_agent.txt"
+  delegate_to: localhost
+  become: false

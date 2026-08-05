@@ -1,0 +1,4 @@
+---
+- name: Verify wazuh-agent
+  ansible.builtin.import_tasks: wazuh_agent.yml
+  tags: [wazuh_agent]

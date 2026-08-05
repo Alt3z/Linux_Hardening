@@ -58,3 +58,17 @@ pam_pwquality_target:
   dcredit: -1
   ocredit: -1
 
+glpi_agent_version: "1.19"
+glpi_agent_installer_url: "https://github.com/glpi-project/glpi-agent/releases/download/{{ glpi_agent_version }}/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl"
+
+glpi_agent_server: "192.168.56.10"
+glpi_agent_httpd_trust:
+  - "192.168.56.10"
+  - "localhost"
+glpi_agent_no_ssl_check: 1
+
+zabbix_server_ip: "192.168.56.101"
+
+wazuh_manager_ip: "192.168.56.105"
+wazuh_agent_version: "4.7.5-1"
+wazuh_agent_deb_url: "https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"

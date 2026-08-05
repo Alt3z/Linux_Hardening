@@ -1,0 +1,78 @@
+---
+- name: Ensure perl and wget are installed
+  ansible.builtin.apt:
+    name:
+      - perl
+      - wget
+    state: present
+
+- name: Check if glpi-agent is already installed
+  ansible.builtin.stat:
+    path: /usr/bin/glpi-agent
+  register: glpi_agent_binary
+
+- name: Ensure local installer storage directory exists
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/../files/glpi-agent-installer"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Check if installer already exists locally
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/../files/glpi-agent-installer/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl"
+  register: glpi_agent_installer_local
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Download glpi-agent installer into project files
+  ansible.builtin.get_url:
+    url: "{{ glpi_agent_installer_url }}"
+    dest: "{{ playbook_dir }}/../files/glpi-agent-installer/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl"
+    mode: "0755"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - not glpi_agent_binary.stat.exists
+    - not glpi_agent_installer_local.stat.exists
+
+- name: Copy installer to target host
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../files/glpi-agent-installer/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl"
+    dest: "/tmp/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl"
+    mode: "0755"
+  when: not glpi_agent_binary.stat.exists
+
+- name: Run glpi-agent installer (3 interactive prompts answered blank)
+  ansible.builtin.shell: >
+    printf '\n\n\n' | perl /tmp/glpi-agent-{{ glpi_agent_version }}-linux-installer.pl
+  args:
+    executable: /bin/bash
+  when: not glpi_agent_binary.stat.exists
+
+- name: Ensure conf.d directory exists
+  ansible.builtin.file:
+    path: /etc/glpi-agent/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy glpi-agent connection config
+  ansible.builtin.template:
+    src: 00-install.cfg.j2
+    dest: /etc/glpi-agent/conf.d/00-install.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart glpi-agent
+
+- name: Ensure glpi-agent is enabled and started
+  ansible.builtin.service:
+    name: glpi-agent
+    enabled: true
+    state: started

@@ -1,0 +1,6 @@
+---
+- name: Install and configure zabbix-agent
+  hosts: linux_hosts
+  become: true
+  roles:
+    - zabbix_agent_hardening

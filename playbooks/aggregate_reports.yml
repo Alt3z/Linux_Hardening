@@ -1,0 +1,7 @@
+---
+- name: Aggregate all reports per host
+  hosts: linux_hosts
+  become: false
+  gather_facts: true
+  roles:
+    - aggregate_reports

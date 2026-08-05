@@ -1,0 +1,6 @@
+---
+- name: Install and configure glpi-agent
+  hosts: linux_hosts
+  become: true
+  roles:
+    - glpi_agent_hardening

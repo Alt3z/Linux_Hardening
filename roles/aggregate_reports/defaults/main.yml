@@ -1,0 +1,1 @@
+aggregate_reports_dir: "{{ playbook_dir }}/../reports"

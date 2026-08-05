@@ -1,0 +1,6 @@
+---
+- name: Verify glpi-agent
+  hosts: linux_hosts
+  become: true
+  roles:
+    - glpi_agent_verify

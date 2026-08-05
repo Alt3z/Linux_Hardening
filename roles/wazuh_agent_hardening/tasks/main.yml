@@ -1,0 +1,60 @@
+---
+- name: Check if wazuh-agent is already installed
+  ansible.builtin.command: dpkg-query -W -f='${Status}' wazuh-agent
+  register: wazuh_agent_dpkg_status
+  changed_when: false
+  failed_when: false
+
+- name: Set installed flag
+  ansible.builtin.set_fact:
+    wazuh_agent_installed: "{{ wazuh_agent_dpkg_status.stdout is defined and 'install ok installed' in wazuh_agent_dpkg_status.stdout }}"
+
+- name: Ensure local package storage directory exists
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/../files/wazuh-agent-installer"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Check if .deb already exists locally
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/../files/wazuh-agent-installer/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"
+  register: wazuh_agent_deb_local
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Download wazuh-agent package into project files
+  ansible.builtin.get_url:
+    url: "{{ wazuh_agent_deb_url }}"
+    dest: "{{ playbook_dir }}/../files/wazuh-agent-installer/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"
+    mode: "0644"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - not wazuh_agent_installed
+    - not wazuh_agent_deb_local.stat.exists
+
+- name: Copy wazuh-agent package to target host
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../files/wazuh-agent-installer/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"
+    dest: "/tmp/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"
+    mode: "0644"
+  when: not wazuh_agent_installed
+
+- name: Install wazuh-agent
+  ansible.builtin.apt:
+    deb: "/tmp/wazuh-agent_{{ wazuh_agent_version }}_amd64.deb"
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
+    WAZUH_AGENT_NAME: "{{ ansible_hostname }}"
+  when: not wazuh_agent_installed
+
+- name: Enable and start wazuh-agent
+  ansible.builtin.service:
+    name: wazuh-agent
+    state: started
+    enabled: true
