@@ -105,7 +105,7 @@ vault_ansible_become_password: "..."
 vault_ssh_key_passphrase: "..."
 ```
 
-3. SSH-ключ
+3\. SSH-ключ
 3.1. Автоматическое создание:
 ```
 ansible-playbook playbooks/generate_ssh_key.yml --ask-vault-pass
@@ -116,7 +116,7 @@ chmod 600 files/ssh_keys/linux_hardening_key
 chmod 644 files/ssh_keys/linux_hardening_key.pub
 ```
 
-4. ssh-agent, если ключ с паролем
+4\. ssh-agent, если ключ с паролем
 
 ```
 eval "$(ssh-agent -s)"
@@ -129,7 +129,7 @@ ssh-add -l   # проверка
 ssh-agent -k
 ```
 
-5. Инвентарь и переменные
+5\. Инвентарь и переменные
 
 ```
 inventory/hosts.yml — IP-адреса test1/test2.
