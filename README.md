@@ -136,6 +136,7 @@ ssh-agent -k
 ```
 inventory/hosts.yml — IP-адреса test1/test2.
 inventory/group_vars/linux_hosts/vars.yml — проверить и поправить под реальные значения:
+ansible_user: "..."
 ssh_hardening_extra_allow_users: [...]
 zabbix_server_ip: "..."
 glpi_agent_server: "..."
