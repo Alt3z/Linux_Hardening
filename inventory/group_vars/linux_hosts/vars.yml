@@ -67,7 +67,9 @@ glpi_agent_httpd_trust:
   - "localhost"
 glpi_agent_no_ssl_check: 1
 
-zabbix_server_ip: "192.168.56.101"
+zabbix_server_ip:
+  - "192.168.56.101"
+  - "192.168.56.102"
 
 wazuh_manager_ip: "192.168.56.105"
 wazuh_agent_version: "4.7.5-1"

@@ -1,24 +1,13 @@
-Отчёт по zabbix-agent
-Хост: {{ inventory_hostname }} ({{ ansible_host }})
-Дата: {{ ansible_date_time.iso8601 | default('') }}
-
-=== Служба ===
-{% set svc = ansible_facts.services['zabbix-agent.service'] | default(None) %}
-{% if svc %}
-{{ '%-25s' | format('zabbix-agent.service') }} состояние: {{ '%-15s' | format(svc.state) }} [{{ 'OK' if svc.state == 'running' else 'FAIL' }}]
-{% else %}
-{{ '%-25s' | format('zabbix-agent.service') }} не найдена [FAIL]
-{% endif %}
-{{ '%-25s' | format('Порт 10050 (локально)') }} [{{ 'OK' if (zabbix_port_check is succeeded) else 'FAIL' }}]
-
 === Конфигурация ===
 {% if zabbix_conf_stat.stat.exists %}
 {% set server_line = zabbix_conf_content.stdout_lines | select('match', '^Server=') | list | first | default('(отсутствует)') %}
 {% set active_line = zabbix_conf_content.stdout_lines | select('match', '^ServerActive=') | list | first | default('(отсутствует)') %}
-{% set config_ok_server = server_line == ('Server=' + zabbix_server_ip) %}
-{% set config_ok_active = active_line == ('ServerActive=' + zabbix_server_ip) %}
-{{ '%-25s' | format('Server') }} значение: {{ '%-25s' | format(server_line) }} [{{ 'OK' if config_ok_server else 'FAIL' }}]
-{{ '%-25s' | format('ServerActive') }} значение: {{ '%-25s' | format(active_line) }} [{{ 'OK' if config_ok_active else 'FAIL' }}]
+{% set expected_line = 'Server=' + (zabbix_server_ip | join(',')) %}
+{% set expected_active_line = 'ServerActive=' + (zabbix_server_ip | join(',')) %}
+{% set config_ok_server = server_line == expected_line %}
+{% set config_ok_active = active_line == expected_active_line %}
+{{ '%-25s' | format('Server') }} значение: {{ '%-30s' | format(server_line) }} [{{ 'OK' if config_ok_server else 'FAIL' }}]
+{{ '%-25s' | format('ServerActive') }} значение: {{ '%-30s' | format(active_line) }} [{{ 'OK' if config_ok_active else 'FAIL' }}]
 {% else %}
 FAIL: /etc/zabbix/zabbix_agentd.conf отсутствует
 {% endif %}
